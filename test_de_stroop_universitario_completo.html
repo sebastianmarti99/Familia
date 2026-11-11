@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Stroop Universitario - Protocolo Experimental</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .kbd-badge {
+            font-family: monospace;
+            box-shadow: 0 2px 0 rgba(255, 255, 255, 0.2);
+        }
+        /* Custom scrollbar for tables */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-full flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="py-3 px-6 border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-lg shadow-indigo-600/30">
+                    <i class="fa-solid fa-brain text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold text-white leading-tight">Test de Stroop - Protocolo Universitario</h1>
+                    <p class="text-xs text-slate-400">Control Inhibitorio • 15 Práctica + 60 Experimentales (20 C / 20 I / 20 N)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="app.showDatabaseModal()" class="text-xs text-slate-300 hover:text-white transition flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700">
+                    <i class="fa-solid fa-database text-indigo-400"></i>
+                    <span>Base de Datos</span>
+                </button>
+                <button onclick="app.resetToStart()" class="text-xs text-slate-400 hover:text-white transition flex items-center gap-1.5 bg-slate-800/60 hover:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span class="hidden sm:inline">Reiniciar</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 flex items-center justify-center p-4 max-w-5xl w-full mx-auto my-auto">
+
+        <!-- 1. USER IDENTIFICATION & INSTRUCTIONS SCREEN -->
+        <div id="screen-start" class="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+            <div class="text-center space-y-2">
+                <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full font-semibold">
+                    Evaluación Cognitiva Universitario
+                </span>
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Identificación del Participante</h2>
+                <p class="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-lg mx-auto">
+                    Indica siempre el <strong class="text-indigo-400">COLOR DE LA TINTA</strong> en la que está escrita la palabra o símbolo, ignorando el significado del texto.
+                </p>
+            </div>
+
+            <!-- Identificación Form -->
+            <form onsubmit="app.handleFormSubmit(event)" class="bg-slate-950/80 border border-slate-800 rounded-xl p-5 space-y-4">
+                <div>
+                    <label for="participant-id" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">
+                        RUT o Seudónimo del Participante <span class="text-red-400">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                            <i class="fa-solid fa-id-card"></i>
+                        </div>
+                        <input type="text" id="participant-id" required placeholder="Ej: 19.876.543-K o Sujeto_04" 
+                            class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 text-sm font-medium transition">
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1">Los datos se guardarán de forma privada en el almacenamiento del navegador.</p>
+                </div>
+
+                <div class="border-t border-slate-800/80 pt-3">
+                    <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Ejemplos Didácticos de las 3 Condiciones</h3>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-lg">
+                            <span class="text-[10px] text-slate-400 font-bold block mb-1">CONGRUENTE</span>
+                            <span class="text-lg font-black block text-red-500">ROJO</span>
+                            <span class="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded mt-1 inline-block">Respuesta: Rojo</span>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-lg">
+                            <span class="text-[10px] text-slate-400 font-bold block mb-1">INCONGRUENTE</span>
+                            <span class="text-lg font-black block text-blue-500">ROJO</span>
+                            <span class="text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded mt-1 inline-block">Respuesta: Azul</span>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-lg">
+                            <span class="text-[10px] text-slate-400 font-bold block mb-1">NEUTRA</span>
+                            <span class="text-lg font-black block text-emerald-500">XXXX</span>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded mt-1 inline-block">Respuesta: Verde</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teclas de acceso rápido -->
+                <div class="border-t border-slate-800/80 pt-3">
+                    <div class="flex items-center justify-between text-xs font-semibold text-slate-400 mb-2">
+                        <span>Controles (Teclado o Clic)</span>
+                        <span class="text-slate-500">Teclas 1 a 5</span>
+                    </div>
+                    <div class="grid grid-cols-5 gap-1.5 text-center text-xs">
+                        <div class="bg-slate-900 border border-slate-800 p-1.5 rounded-lg text-red-400 font-bold">
+                            <span class="kbd-badge bg-slate-800 text-white px-1.5 py-0.5 rounded text-[10px] block mb-1">1</span>
+                            Rojo
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-1.5 rounded-lg text-emerald-400 font-bold">
+                            <span class="kbd-badge bg-slate-800 text-white px-1.5 py-0.5 rounded text-[10px] block mb-1">2</span>
+                            Verde
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-1.5 rounded-lg text-purple-400 font-bold">
+                            <span class="kbd-badge bg-slate-800 text-white px-1.5 py-0.5 rounded text-[10px] block mb-1">3</span>
+                            Morado
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-1.5 rounded-lg text-amber-500 font-bold">
+                            <span class="kbd-badge bg-slate-800 text-white px-1.5 py-0.5 rounded text-[10px] block mb-1">4</span>
+                            Marrón
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-1.5 rounded-lg text-blue-400 font-bold">
+                            <span class="kbd-badge bg-slate-800 text-white px-1.5 py-0.5 rounded text-[10px] block mb-1">5</span>
+                            Azul
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm flex items-center justify-center space-x-2 border border-indigo-400/30">
+                    <span>Comenzar Fase de Práctica (15 Ensayos)</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- 2. PRACTICE TRANSITION MODAL/SCREEN -->
+        <div id="screen-practice-end" class="hidden w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl text-center space-y-5">
+            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center text-2xl mx-auto border border-emerald-500/30">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-2xl font-extrabold text-white">¡Fase de Práctica Completada!</h2>
+                <p class="text-slate-300 text-sm"> Has realizado los 15 ensayos de entrenamiento.</p>
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 my-2 text-xs text-slate-400">
+                    <p class="font-semibold text-white mb-1">Resumen de Práctica:</p>
+                    <span id="practice-summary-text" class="text-emerald-400 font-mono text-sm">15/15 Aciertos</span>
+                </div>
+                <p class="text-xs text-amber-400/90 bg-amber-950/30 border border-amber-800/40 p-2.5 rounded-lg">
+                    <i class="fa-solid fa-circle-info mr-1"></i> A continuación comenzará la <strong>Prueba Experimental Real (60 ensayos)</strong>. En esta fase NO se mostrará retroalimentación de error/acierto. Respondé tan rápido y preciso como puedas.
+                </p>
+            </div>
+            <button onclick="app.startExperimentalPhase()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg transition text-sm flex items-center justify-center space-x-2 border border-emerald-400/30">
+                <i class="fa-solid fa-play text-xs"></i>
+                <span>Iniciar Test Experimental Real (60 Ensayos)</span>
+            </button>
+        </div>
+
+        <!-- 3. ACTIVE TEST INTERFACE (PRACTICE / EXPERIMENTAL) -->
+        <div id="screen-test" class="hidden w-full max-w-xl space-y-5">
+            <!-- Test Header Info -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between text-xs sm:text-sm">
+                <div class="flex items-center space-x-2">
+                    <span id="test-phase-badge" class="bg-amber-500/20 text-amber-300 font-bold px-2.5 py-0.5 rounded-md text-xs uppercase border border-amber-500/30">
+                        Práctica
+                    </span>
+                    <span id="test-progress" class="font-bold font-mono text-white bg-slate-800 px-2.5 py-1 rounded-md">1 / 15</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs uppercase font-semibold text-slate-400">Sujeto:</span>
+                    <span id="test-subject-display" class="font-semibold text-indigo-300 truncate max-w-[120px]">---</span>
+                </div>
+            </div>
+
+            <!-- Stimulus Display Box -->
+            <div class="relative bg-white rounded-2xl p-10 sm:p-14 shadow-2xl text-center flex flex-col items-center justify-center min-h-[260px] select-none border-2 border-slate-200">
+                <span class="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-2">Indica el color de la tinta</span>
+                
+                <div id="stimulus-word" class="text-6xl sm:text-7xl font-black tracking-wide my-3 transition-transform duration-75">
+                    ROJO
+                </div>
+
+                <!-- Instant Feedback Popup (Only for Practice phase) -->
+                <div id="practice-feedback" class="absolute bottom-3 inset-x-0 mx-auto w-max px-4 py-1.5 rounded-full font-bold text-xs shadow-md transition-all duration-150 opacity-0 transform translate-y-2 pointer-events-none">
+                    ¡Correcto!
+                </div>
+            </div>
+
+            <!-- Buttons Palette -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                <button onclick="app.recordAnswer('Rojo')" class="bg-red-600 hover:bg-red-500 active:scale-95 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-between border border-red-400/30">
+                    <span>Rojo</span>
+                    <span class="kbd-badge bg-red-900/80 text-white text-xs px-2 py-0.5 rounded">1</span>
+                </button>
+                <button onclick="app.recordAnswer('Verde')" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-between border border-emerald-400/30">
+                    <span>Verde</span>
+                    <span class="kbd-badge bg-emerald-900/80 text-white text-xs px-2 py-0.5 rounded">2</span>
+                </button>
+                <button onclick="app.recordAnswer('Morado')" class="bg-purple-600 hover:bg-purple-500 active:scale-95 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-between border border-purple-400/30">
+                    <span>Morado</span>
+                    <span class="kbd-badge bg-purple-900/80 text-white text-xs px-2 py-0.5 rounded">3</span>
+                </button>
+                <button onclick="app.recordAnswer('Marrón')" class="bg-amber-700 hover:bg-amber-600 active:scale-95 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-between border border-amber-500/30">
+                    <span>Marrón</span>
+                    <span class="kbd-badge bg-amber-950/80 text-white text-xs px-2 py-0.5 rounded">4</span>
+                </button>
+                <button onclick="app.recordAnswer('Azul')" class="bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-between border border-blue-400/30 col-span-2 sm:col-span-2">
+                    <span>Azul</span>
+                    <span class="kbd-badge bg-blue-900/80 text-white text-xs px-2 py-0.5 rounded">5</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 4. SUMMARY RESULTS SCREEN -->
+        <div id="screen-results" class="hidden w-full max-w-3xl bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs px-2.5 py-0.5 rounded-full font-semibold">
+                            Test Finalizado y Guardado
+                        </span>
+                        <span id="res-date" class="text-xs text-slate-500"></span>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-white mt-1">Informe Resultados: <span id="res-participant" class="text-indigo-400"></span></h2>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button onclick="app.exportCurrentCSV()" class="flex-1 sm:flex-initial text-xs bg-slate-800 hover:bg-slate-700 text-white font-medium px-3.5 py-2 rounded-lg border border-slate-700 transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-file-csv text-emerald-400"></i>
+                        <span>Exportar CSV</span>
+                    </button>
+                    <button onclick="app.showDatabaseModal()" class="flex-1 sm:flex-initial text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-3.5 py-2 rounded-lg transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-database"></i>
+                        <span>Ver Historial</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Primary Metrics Grid (3 Conditions: Congruent, Incongruent, Neutral) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-center">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Aciertos Totales</span>
+                    <span id="res-accuracy" class="text-2xl font-extrabold text-emerald-400 font-mono">0 / 60</span>
+                    <span id="res-accuracy-pct" class="text-[11px] text-slate-500 block mt-0.5">0%</span>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-center">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">TR Congruente</span>
+                    <span id="res-cong-time" class="text-xl font-extrabold text-blue-400 font-mono">0 ms</span>
+                    <span id="res-cong-acc" class="text-[11px] text-slate-500 block mt-0.5">20/20 aciertos</span>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-center">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">TR Incongruente</span>
+                    <span id="res-incong-time" class="text-xl font-extrabold text-purple-400 font-mono">0 ms</span>
+                    <span id="res-incong-acc" class="text-[11px] text-slate-500 block mt-0.5">20/20 aciertos</span>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-center">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">TR Neutro</span>
+                    <span id="res-neutral-time" class="text-xl font-extrabold text-emerald-400 font-mono">0 ms</span>
+                    <span id="res-neutral-acc" class="text-[11px] text-slate-500 block mt-0.5">20/20 aciertos</span>
+                </div>
+            </div>
+
+            <!-- Stroop Interference Box -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                <div class="space-y-1">
+                    <h3 class="text-xs uppercase font-bold text-indigo-300">Efecto de Interferencia Stroop</h3>
+                    <p class="text-xs text-slate-400">Diferencia de tiempo de respuesta (TR Incongruente - TR Congruente)</p>
+                </div>
+                <div class="flex items-center justify-end space-x-3 bg-slate-900 p-3 rounded-lg border border-slate-800">
+                    <span class="text-xs text-slate-400 font-semibold">Interferencia:</span>
+                    <span id="res-interference" class="text-2xl font-black font-mono text-indigo-400">+0 ms</span>
+                </div>
+            </div>
+
+            <!-- Table breakdown of the 60 experimental trials -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Detalle de los 60 Ensayos Experimentales</h3>
+                    <span class="text-[11px] text-slate-500">Orden aleatorio aplicado</span>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
+                    <div class="max-h-56 overflow-y-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-900 text-slate-400 sticky top-0 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-2.5">#</th>
+                                    <th class="p-2.5">Estímulo</th>
+                                    <th class="p-2.5">Color Tinta</th>
+                                    <th class="p-2.5">Condición</th>
+                                    <th class="p-2.5">Respuesta</th>
+                                    <th class="p-2.5">TR (ms)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="res-table-body" class="divide-y divide-slate-800/60 text-slate-300 font-mono">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-2">
+                <button onclick="app.resetToStart()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-rotate-right text-xs"></i>
+                    <span>Nuevo Test / Cambiar Participante</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 5. DATABASE & STORAGE MODAL -->
+    <div id="modal-database" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl p-6 shadow-2xl space-y-5 max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-database text-indigo-400 text-lg"></i>
+                    <h3 class="text-lg font-bold text-white">Base de Datos de Resultados Guardados</h3>
+                </div>
+                <button onclick="app.hideDatabaseModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Database Controls -->
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs">
+                <div class="flex items-center space-x-2">
+                    <span class="text-slate-400 font-semibold">Registros almacenados:</span>
+                    <span id="db-record-count" class="font-bold text-indigo-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800 font-mono">0</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="app.exportAllCSV()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-csv"></i>
+                        <span>Exportar Todo (CSV)</span>
+                    </button>
+                    <button onclick="app.exportAllJSON()" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-code"></i>
+                        <span>Exportar (JSON)</span>
+                    </button>
+                    <button onclick="app.clearDatabase()" class="bg-red-900/60 hover:bg-red-800 text-red-200 font-semibold px-3 py-1.5 rounded-lg border border-red-800/50 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-trash"></i>
+                        <span>Borrar Base</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Records Table -->
+            <div class="flex-1 overflow-y-auto border border-slate-800 rounded-xl bg-slate-950">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-900 text-slate-400 sticky top-0 border-b border-slate-800">
+                        <tr>
+                            <th class="p-3">Fecha</th>
+                            <th class="p-3">RUT / Seudónimo</th>
+                            <th class="p-3">Aciertos (60)</th>
+                            <th class="p-3">TR Cong.</th>
+                            <th class="p-3">TR Incong.</th>
+                            <th class="p-3">TR Neutro</th>
+                            <th class="p-3">Interferencia</th>
+                            <th class="p-3 text-right">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="db-table-body" class="divide-y divide-slate-800/60 text-slate-300 font-mono">
+                        <!-- Filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-right pt-2 border-t border-slate-800">
+                <button onclick="app.hideDatabaseModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-4 py-2 rounded-lg font-semibold transition">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-3 text-center text-[11px] text-slate-500 border-t border-slate-900">
+        Test de Stroop Universitario • 15 Práctica + 60 Ensayos Experimentales • Registro en LocalStorage
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        // Colors palette definitions
+        const COLORS = [
+            { name: "Rojo", hex: "#e61919" },
+            { name: "Verde", hex: "#23a03a" },
+            { name: "Morado", hex: "#9b6cb7" },
+            { name: "Marrón", hex: "#b27c5b" },
+            { name: "Azul", hex: "#0000ef" }
+        ];
+
+        class StroopExperimentApp {
+            constructor() {
+                this.participantId = "";
+                this.currentPhase = "practice"; // 'practice' or 'experimental'
+                this.currentIndex = 0;
+                this.itemStartTime = 0;
+                this.trialsList = [];
+                this.practiceResponses = [];
+                this.experimentalResponses = [];
+                this.dbKey = "stroop_university_db_v1";
+
+                this.initDB();
+                this.bindKeyboard();
+            }
+
+            // LocalStorage Database initialization
+            initDB() {
+                if (!localStorage.getItem(this.dbKey)) {
+                    localStorage.setItem(this.dbKey, JSON.stringify([]));
+                }
+            }
+
+            getStoredRecords() {
+                try {
+                    return JSON.parse(localStorage.getItem(this.dbKey)) || [];
+                } catch(e) {
+                    return [];
+                }
+            }
+
+            saveRecord(record) {
+                const records = this.getStoredRecords();
+                records.unshift(record); // newest first
+                localStorage.setItem(this.dbKey, JSON.stringify(records));
+            }
+
+            // Keyboard shortcut support
+            bindKeyboard() {
+                window.addEventListener('keydown', (e) => {
+                    const screenTest = document.getElementById('screen-test');
+                    if (screenTest.classList.contains('hidden')) return;
+
+                    const keyMap = {
+                        '1': 'Rojo',
+                        '2': 'Verde',
+                        '3': 'Morado',
+                        '4': 'Marrón',
+                        '5': 'Azul'
+                    };
+
+                    if (keyMap[e.key]) {
+                        this.recordAnswer(keyMap[e.key]);
+                    }
+                });
+            }
+
+            // Generate 15 Practice trials (balanced across conditions)
+            generatePracticeItems() {
+                const list = [];
+                // 5 Congruent, 5 Incongruent, 5 Neutral
+                for(let i = 0; i < 5; i++) {
+                    const cColor = COLORS[i % COLORS.length];
+                    list.push({ word: cColor.name, colorName: cColor.name, colorHex: cColor.hex, type: "Congruente" });
+                }
+                for(let i = 0; i < 5; i++) {
+                    const wordColor = COLORS[i % COLORS.length];
+                    const inkColor = COLORS[(i + 1) % COLORS.length];
+                    list.push({ word: wordColor.name, colorName: inkColor.name, colorHex: inkColor.hex, type: "Incongruente" });
+                }
+                for(let i = 0; i < 5; i++) {
+                    const inkColor = COLORS[i % COLORS.length];
+                    list.push({ word: "XXXX", colorName: inkColor.name, colorHex: inkColor.hex, type: "Neutra" });
+                }
+                return this.shuffle(list);
+            }
+
+            // Generate exact 60 experimental items (20 Congruent, 20 Incongruent, 20 Neutral)
+            generate60ExperimentalItems() {
+                const list = [];
+
+                // 20 Congruentes
+                for(let i = 0; i < 20; i++) {
+                    const color = COLORS[i % COLORS.length];
+                    list.push({ word: color.name, colorName: color.name, colorHex: color.hex, type: "Congruente" });
+                }
+
+                // 20 Incongruentes
+                for(let i = 0; i < 20; i++) {
+                    const wordColor = COLORS[i % COLORS.length];
+                    // Ensure ink color is different from word text
+                    const inkColor = COLORS[(i + 1 + Math.floor(i / 5)) % COLORS.length];
+                    list.push({ word: wordColor.name, colorName: inkColor.name, colorHex: inkColor.hex, type: "Incongruente" });
+                }
+
+                // 20 Neutras (XXXX)
+                for(let i = 0; i < 20; i++) {
+                    const inkColor = COLORS[i % COLORS.length];
+                    list.push({ word: "XXXX", colorName: inkColor.name, colorHex: inkColor.hex, type: "Neutra" });
+                }
+
+                return this.shuffle(list);
+            }
+
+            shuffle(array) {
+                const arr = [...array];
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+
+            handleFormSubmit(e) {
+                e.preventDefault();
+                const input = document.getElementById('participant-id');
+                this.participantId = input.value.trim() || "Anónimo";
+                document.getElementById('test-subject-display').innerText = this.participantId;
+
+                // Start practice phase
+                this.startPracticePhase();
+            }
+
+            startPracticePhase() {
+                this.currentPhase = "practice";
+                this.currentIndex = 0;
+                this.practiceResponses = [];
+                this.trialsList = this.generatePracticeItems();
+
+                document.getElementById('screen-start').classList.add('hidden');
+                document.getElementById('screen-results').classList.add('hidden');
+                document.getElementById('screen-practice-end').classList.add('hidden');
+                document.getElementById('screen-test').classList.remove('hidden');
+
+                document.getElementById('test-phase-badge').innerText = "Práctica (15 Ensayos)";
+                document.getElementById('test-phase-badge').className = "bg-amber-500/20 text-amber-300 font-bold px-2.5 py-0.5 rounded-md text-xs uppercase border border-amber-500/30";
+
+                this.nextItem();
+            }
+
+            startExperimentalPhase() {
+                this.currentPhase = "experimental";
+                this.currentIndex = 0;
+                this.experimentalResponses = [];
+                this.trialsList = this.generate60ExperimentalItems();
+
+                document.getElementById('screen-practice-end').classList.add('hidden');
+                document.getElementById('screen-test').classList.remove('hidden');
+
+                document.getElementById('test-phase-badge').innerText = "Test Real (60 Ensayos)";
+                document.getElementById('test-phase-badge').className = "bg-indigo-500/20 text-indigo-300 font-bold px-2.5 py-0.5 rounded-md text-xs uppercase border border-indigo-500/30";
+
+                this.nextItem();
+            }
+
+            nextItem() {
+                if (this.currentIndex >= this.trialsList.length) {
+                    if (this.currentPhase === "practice") {
+                        this.finishPracticePhase();
+                    } else {
+                        this.finishExperimentalTest();
+                    }
+                    return;
+                }
+
+                const item = this.trialsList[this.currentIndex];
+                document.getElementById('test-progress').innerText = `${this.currentIndex + 1} / ${this.trialsList.length}`;
+                
+                const wordEl = document.getElementById('stimulus-word');
+                wordEl.innerText = item.word;
+                wordEl.style.color = item.colorHex;
+
+                this.itemStartTime = performance.now();
+            }
+
+            recordAnswer(selectedColor) {
+                const now = performance.now();
+                const reactionTimeMs = Math.round(now - this.itemStartTime);
+                const currentItem = this.trialsList[this.currentIndex];
+
+                const isCorrect = (selectedColor.toLowerCase() === currentItem.colorName.toLowerCase());
+
+                const responseData = {
+                    ...currentItem,
+                    selectedColor,
+                    isCorrect,
+                    reactionTimeMs
+                };
+
+                if (this.currentPhase === "practice") {
+                    this.practiceResponses.push(responseData);
+                    this.showPracticeFeedback(isCorrect);
+                } else {
+                    this.experimentalResponses.push(responseData);
+                }
+
+                this.currentIndex++;
+                this.nextItem();
+            }
+
+            showPracticeFeedback(isCorrect) {
+                const feedbackEl = document.getElementById('practice-feedback');
+                if (isCorrect) {
+                    feedbackEl.innerText = "¡Correcto!";
+                    feedbackEl.className = "absolute bottom-3 inset-x-0 mx-auto w-max px-4 py-1.5 rounded-full font-bold text-xs shadow-md transition-all duration-150 bg-emerald-500 text-slate-950 opacity-100 transform translate-y-0";
+                } else {
+                    feedbackEl.innerText = "¡Incorrecto!";
+                    feedbackEl.className = "absolute bottom-3 inset-x-0 mx-auto w-max px-4 py-1.5 rounded-full font-bold text-xs shadow-md transition-all duration-150 bg-red-500 text-white opacity-100 transform translate-y-0";
+                }
+
+                setTimeout(() => {
+                    feedbackEl.classList.add('opacity-0', 'translate-y-2');
+                }, 400);
+            }
+
+            finishPracticePhase() {
+                document.getElementById('screen-test').classList.add('hidden');
+                
+                const correctCount = this.practiceResponses.filter(r => r.isCorrect).length;
+                document.getElementById('practice-summary-text').innerText = `${correctCount} / 15 Aciertos (${Math.round(correctCount/15*100)}%)`;
+
+                document.getElementById('screen-practice-end').classList.remove('hidden');
+            }
+
+            finishExperimentalTest() {
+                const responses = this.experimentalResponses;
+                const dateStr = new Date().toLocaleString('es-CL');
+                async function sendToSqlServer(payload) {
+    					try {
+        			const response = await fetch('http://localhost:3000/api/stroop', {
+            			method: 'POST',
+            			headers: { 'Content-Type': 'application/json' },
+            			body: JSON.stringify(payload)
+        			});
+
+        			if (response.ok) {
+            			console.log("Transmitido a SQL Server exitosamente.");
+        			} else {
+            			console.error("El servidor respondió con error.");
+        			}
+    			} catch (error) {
+        			console.error("No se pudo conectar con el backend de SQL Server:", error);
+    			}
+		}
+                // Categorization
+                const cong = responses.filter(r => r.type === "Congruente");
+                const incong = responses.filter(r => r.type === "Incongruente");
+                const neutral = responses.filter(r => r.type === "Neutra");
+
+                const totalCorrect = responses.filter(r => r.isCorrect).length;
+                const accuracyPct = Math.round((totalCorrect / 60) * 100);
+
+                const avgTime = (arr) => {
+                    if (!arr.length) return 0;
+                    const sum = arr.reduce((acc, r) => acc + r.reactionTimeMs, 0);
+                    return Math.round(sum / arr.length);
+                };
+
+                const trCong = avgTime(cong);
+                const trIncong = avgTime(incong);
+                const trNeutral = avgTime(neutral);
+                const interference = trIncong - trCong;
+
+                // Create DB Record Object
+                const record = {
+                    id: Date.now(),
+                    date: dateStr,
+                    participantId: this.participantId,
+                    totalCorrect,
+                    totalTrials: 60,
+                    accuracyPct,
+                    trCong,
+                    trIncong,
+                    trNeutral,
+                    interference,
+                    trials: responses
+                };
+                sendToSqlServer(record);
+                // Save to LocalStorage
+                this.saveRecord(record);
+
+                // Populate UI Results
+                document.getElementById('res-participant').innerText = this.participantId;
+                document.getElementById('res-date').innerText = dateStr;
+
+                document.getElementById('res-accuracy').innerText = `${totalCorrect} / 60`;
+                document.getElementById('res-accuracy-pct').innerText = `${accuracyPct}% de precisión`;
+
+                document.getElementById('res-cong-time').innerText = `${trCong} ms`;
+                document.getElementById('res-cong-acc').innerText = `${cong.filter(r => r.isCorrect).length}/20 aciertos`;
+
+                document.getElementById('res-incong-time').innerText = `${trIncong} ms`;
+                document.getElementById('res-incong-acc').innerText = `${incong.filter(r => r.isCorrect).length}/20 aciertos`;
+
+                document.getElementById('res-neutral-time').innerText = `${trNeutral} ms`;
+                document.getElementById('res-neutral-acc').innerText = `${neutral.filter(r => r.isCorrect).length}/20 aciertos`;
+
+                document.getElementById('res-interference').innerText = `${interference >= 0 ? '+' : ''}${interference} ms`;
+
+                // Render detail table
+                const tbody = document.getElementById('res-table-body');
+                tbody.innerHTML = '';
+                responses.forEach((r, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.className = r.isCorrect ? 'hover:bg-slate-900' : 'bg-red-950/30 hover:bg-red-950/50';
+                    tr.innerHTML = `
+                        <td class="p-2.5 text-slate-500">${idx + 1}</td>
+                        <td class="p-2.5 font-bold text-white">${r.word}</td>
+                        <td class="p-2.5 font-bold" style="color:${r.colorHex}">${r.colorName}</td>
+                        <td class="p-2.5">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${
+                                r.type === 'Congruente' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
+                                r.type === 'Incongruente' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' :
+                                'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            }">
+                                ${r.type}
+                            </span>
+                        </td>
+                        <td class="p-2.5">${r.selectedColor} ${r.isCorrect ? '<span class="text-emerald-400 font-bold ml-1">✓</span>' : '<span class="text-red-400 font-bold ml-1">✗</span>'}</td>
+                        <td class="p-2.5">${r.reactionTimeMs} ms</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                // UI Switch
+                document.getElementById('screen-test').classList.add('hidden');
+                document.getElementById('screen-results').classList.remove('hidden');
+            }
+
+            // Database Modal Handlers
+            showDatabaseModal() {
+                const records = this.getStoredRecords();
+                document.getElementById('db-record-count').innerText = records.length;
+
+                const tbody = document.getElementById('db-table-body');
+                tbody.innerHTML = '';
+
+                if (records.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="p-6 text-center text-slate-500">
+                                No hay pruebas registradas aún en esta base de datos local.
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    records.forEach(rec => {
+                        const tr = document.createElement('tr');
+                        tr.className = "hover:bg-slate-900";
+                        tr.innerHTML = `
+                            <td class="p-3 text-slate-400">${rec.date}</td>
+                            <td class="p-3 font-bold text-white">${rec.participantId}</td>
+                            <td class="p-3 font-bold text-emerald-400">${rec.totalCorrect} / 60 (${rec.accuracyPct}%)</td>
+                            <td class="p-3 text-blue-400">${rec.trCong} ms</td>
+                            <td class="p-3 text-purple-400">${rec.trIncong} ms</td>
+                            <td class="p-3 text-emerald-400">${rec.trNeutral} ms</td>
+                            <td class="p-3 font-bold text-indigo-300">${rec.interference >= 0 ? '+' : ''}${rec.interference} ms</td>
+                            <td class="p-3 text-right">
+                                <button onclick="app.exportSingleCSV(${rec.id})" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-700">
+                                    <i class="fa-solid fa-download"></i>
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                document.getElementById('modal-database').classList.remove('hidden');
+            }
+
+            hideDatabaseModal() {
+                document.getElementById('modal-database').classList.add('hidden');
+            }
+
+            clearDatabase() {
+                if (confirm("¿Estás seguro de que deseas eliminar TODOS los resultados de la base de datos local?")) {
+                    localStorage.setItem(this.dbKey, JSON.stringify([]));
+                    this.showDatabaseModal();
+                }
+            }
+
+            // CSV & JSON Exporters
+            exportCurrentCSV() {
+                const records = this.getStoredRecords();
+                if (records.length > 0) {
+                    this.downloadCSV([records[0]], `Stroop_${records[0].participantId}_${Date.now()}.csv`);
+                }
+            }
+
+            exportSingleCSV(recordId) {
+                const records = this.getStoredRecords();
+                const rec = records.find(r => r.id === recordId);
+                if (rec) {
+                    this.downloadCSV([rec], `Stroop_${rec.participantId}_${rec.id}.csv`);
+                }
+            }
+
+            exportAllCSV() {
+                const records = this.getStoredRecords();
+                if (!records.length) {
+                    alert("No hay datos cargados para exportar.");
+                    return;
+                }
+                this.downloadCSV(records, `Stroop_BaseCompleta_${Date.now()}.csv`);
+            }
+
+            exportAllJSON() {
+                const records = this.getStoredRecords();
+                if (!records.length) {
+                    alert("No hay datos cargados para exportar.");
+                    return;
+                }
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(records, null, 2));
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `Stroop_BaseCompleta_${Date.now()}.json`);
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+            }
+
+            downloadCSV(recordsList, filename) {
+                let csvContent = "data:text/csv;charset=utf-8,";
+                // Header
+                csvContent += "RUT_Seudónimo,Fecha,Total_Aciertos,Precision_Pct,TR_Congruente_ms,TR_Incongruente_ms,TR_Neutro_ms,Interferencia_Stroop_ms,Ensayo_Num,Estimulo_Texto,Color_Tinta,Condicion,Respuesta_Sujeto,Acierto,TR_Ensayo_ms\n";
+
+                recordsList.forEach(rec => {
+                    rec.trials.forEach((t, i) => {
+                        const row = [
+                            `"${rec.participantId}"`,
+                            `"${rec.date}"`,
+                            rec.totalCorrect,
+                            rec.accuracyPct,
+                            rec.trCong,
+                            rec.trIncong,
+                            rec.trNeutral,
+                            rec.interference,
+                            i + 1,
+                            `"${t.word}"`,
+                            `"${t.colorName}"`,
+                            `"${t.type}"`,
+                            `"${t.selectedColor}"`,
+                            t.isCorrect ? 1 : 0,
+                            t.reactionTimeMs
+                        ].join(",");
+                        csvContent += row + "\n";
+                    });
+                });
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            }
+
+            resetToStart() {
+                document.getElementById('screen-test').classList.add('hidden');
+                document.getElementById('screen-results').classList.add('hidden');
+                document.getElementById('screen-practice-end').classList.add('hidden');
+                document.getElementById('screen-start').classList.remove('hidden');
+            }
+        }
+
+        // App instance initialization
+        const app = new StroopExperimentApp();
+    </script>
+</body>
+</html>
