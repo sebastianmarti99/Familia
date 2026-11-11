@@ -3,6 +3,7 @@ const sql = require('mssql');
 const cors = require('cors');
 
 const app = express();
+app.use(express.static(__dirname));
 app.use(cors()); // Permite peticiones desde el navegador
 app.use(express.json());
 
@@ -49,7 +50,11 @@ app.post('/api/stroop', async (req, res) => {
         res.status(500).json({ success: false, error: err.message });
     }
 });
+const path = require('path');
 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'test_de_stroop_universitario_completo.html'));
+});
 app.listen(3000, () => {
     console.log('🚀 Servidor API de Stroop escuchando en http://localhost:3000');
 });
