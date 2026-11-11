@@ -633,7 +633,7 @@
                 const dateStr = new Date().toLocaleString('es-CL');
                 async function sendToSqlServer(payload) {
     					try {
-        			const response = await fetch('http://localhost:3000/api/stroop', {
+        			const response = await fetch('https://familia-p95v.onrender.com/api/stroop', {
             			method: 'POST',
             			headers: { 'Content-Type': 'application/json' },
             			body: JSON.stringify(payload)
