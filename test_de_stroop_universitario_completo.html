@@ -635,10 +635,10 @@
     					try {
         			const response = await fetch('https://script.google.com/macros/s/AKfycbzelSGBB6OA00LFt10Lv5YFAhpKcWHQ_7z7D_tzWg6uRjRMOV8LuAamX6jtfs8do-7G/exec', {
             			method: 'POST',
-            			headers: { 'Content-Type': 'application/json' },
+            		    mode: 'no-cors',
             			body: JSON.stringify(payload)
         			});
-
+                    alert("POST ENVIADO");
         			if (response.ok) {
             			console.log("Transmitido a SQL Server exitosamente.");
         			} else {
